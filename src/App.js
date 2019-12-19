@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
-import logo from './logo.svg';
 import './App.css';
-// import Header from './components/header';
 import { BrowserRouter, Switch, Route, Link} from 'react-router-dom';
 import TodoTasks from './components/TodoTasks';
 import FinishedTasks from './components/FinishedTasks';
 import Lists from './components/Lists';
 import { CssBaseline, Container } from '@material-ui/core';
+import { connect } from 'react-redux';
 
 
 function App() {
@@ -55,5 +54,12 @@ function Header (props){
       </nav>
       );
 }
-
-export default App;
+export default connect(
+  state => ({
+    todolists: state.todolists
+  }),
+  dispatch => ({
+    addList: list => {
+      dispatch({ type: "ADD_LIST", data: list });
+    }
+  }))(App);
