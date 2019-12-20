@@ -62,6 +62,7 @@ export const Lists = () => {
       const rand = Math.random();
       handleAddList(val, rand);
       handleUpdateList(rand);
+      setState({newlist: ''});
     }
 
     const handleChange = (event) => {     
@@ -78,6 +79,9 @@ export const Lists = () => {
                     native
                     value={state.age}
                     onChange={handleChange}
+                    value = {todolists.activeListId}
+                    className="listSelect"
+                    // style={{width: '170px'}}
                     inputProps={{
                     name: 'lists',
                     id: 'lists-native-simple',

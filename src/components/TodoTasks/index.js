@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 import './style.scss';
-import { Checkbox, Button, List, ListItem, ListItemIcon, ListItemText, ListItemSecondaryAction, makeStyles } from '@material-ui/core';
+import { Checkbox, Button, List, ListItem, ListItemIcon, ListItemText, ListItemSecondaryAction, makeStyles, Input, TextField } from '@material-ui/core';
 import { useSelector, useDispatch } from 'react-redux';
 
 const useStyles = makeStyles(theme => ({
@@ -17,6 +17,7 @@ function TodoTasks(){
     const classes = useStyles();
 
     const [checked, setChecked] = React.useState([0]);
+    const [taskName, setTaskName] = React.useState("");
 
     const todolists = useSelector(state => state.todolists);
     const dispatch = useDispatch();
@@ -32,6 +33,15 @@ function TodoTasks(){
         }
 
         setChecked(newChecked);
+
+        dispatch({ 
+            type: 'FINISH_TASK', 
+            data: {
+                Id: value.Id,
+                IsActive: false,
+            }
+        });
+
     };
 
     const handleAdd = useCallback(() => dispatch({ 
@@ -49,18 +59,36 @@ function TodoTasks(){
         handleAdd();
     };
 
+
+    const handleTaskName = (text, taskId)=>{
+        console.log('test1='+JSON.stringify(taskName))
+        setTaskName(...taskName,text);
+        console.log('test2='+JSON.stringify(taskName))
+        
+        handleTaskNameUpdate(text, taskId);
+    };
+
+    const handleTaskNameUpdate = (text, taskId) => {
+        console.log('text='+text);
+        dispatch({ 
+        type: 'UPDATE_TASK', 
+        data: {
+            Id: taskId,
+            Name: text,
+        }
+      })};
+
     const tasks = todolists.TodoLists.filter(list=>(list.Id==todolists.activeListId))[0];
-    console.log('tasks='+JSON.stringify(tasks));
     return (
         <div>
             <h3>TODO Tasks</h3>
 
             <List className={classes.root}>
-                {tasks && tasks.length!=0 && tasks.Tasks.map(value => {
+                {tasks && tasks.length!=0 && tasks.Tasks.filter(item=>(item.IsActive)).map(value => {
                     const labelId = `checkbox-list-label-${value}`;
 
                     return (
-                    <ListItem key={value} role={undefined} dense button onClick={handleToggle(value)}>
+                    <ListItem key={value.Id+''} role={undefined} dense button>
                         <ListItemIcon>
                         <Checkbox
                             edge="start"
@@ -68,16 +96,24 @@ function TodoTasks(){
                             tabIndex={-1}
                             disableRipple
                             inputProps={{ 'aria-labelledby': labelId }}
+                            onClick={handleToggle(value)}
                         />
                         </ListItemIcon>
-                        <ListItemText id={labelId} primary={``}
-                            contentEditable={true} suppressContentEditableWarning={true}/>
+                        <TextField key={value.Id} primary={``}
+                            value={value.Name} onChange={(e)=>handleTaskName(e.target.value, value.Id)}/>
                         
                     </ListItem>
                     );
                 })}
             </List>
-            <Button variant="contained" onClick={()=>addTask()}>+ Add task</Button>
+            {
+             todolists.activeListId!==0 &&
+                <Button variant="contained" onClick={()=>addTask()}>+ Add task</Button>
+            }
+            {
+             todolists.activeListId===0 &&
+                <label>Please select task list</label>
+            }
         </div>
     );
 }

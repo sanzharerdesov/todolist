@@ -25,10 +25,17 @@ const todolists = (state = initialState, action) => {
             return {...state};
         }
         case 'ADD_TASK': {
-            console.log('test='+JSON.stringify(state.TodoLists.filter(list=>(list.Id == state.activeListId))));
             state.TodoLists.filter(list=>(list.Id == state.activeListId))[0].Tasks.push(action.data);
             return {...state};
-        }   
+        }
+        case 'UPDATE_TASK': {
+            state.TodoLists.filter(list=>(list.Id == state.activeListId))[0].Tasks.filter(task=>(task.Id == action.data.Id))[0].Name = action.data.Name;
+            return {...state};
+        }
+        case 'FINISH_TASK': {
+            state.TodoLists.filter(list=>(list.Id == state.activeListId))[0].Tasks.filter(task=>(task.Id == action.data.Id))[0].IsActive = action.data.IsActive;
+            return {...state};
+        }
         default:
             break;
     }
